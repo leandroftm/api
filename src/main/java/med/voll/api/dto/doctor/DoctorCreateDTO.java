@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import med.voll.api.dto.Address.AddressDTO;
 import med.voll.api.enums.MedicalSpeciality;
-import org.aspectj.weaver.ast.Not;
 
 public record DoctorCreateDTO(
 

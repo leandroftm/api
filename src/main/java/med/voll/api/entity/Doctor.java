@@ -23,6 +23,8 @@ public class Doctor {
     private String name;
     private String email;
     private String telephone;
+
+    @Column(nullable = false, unique = true)
     private String crm;
 
     @Enumerated(EnumType.STRING)
@@ -43,7 +45,7 @@ public class Doctor {
         this.address = new Address(doctor.address());
     }
 
-    public void update(@Valid DoctorUpdateDTO doctor) {
+    public void update(DoctorUpdateDTO doctor) {
        if(doctor.name() != null)
         this.name = doctor.name();
        if(doctor.telephone() != null)
@@ -54,7 +56,7 @@ public class Doctor {
            this.active = doctor.active();
     }
 
-    public void applyInactive() {
+    public void deactivate() {
         this.active = false;
     }
 }

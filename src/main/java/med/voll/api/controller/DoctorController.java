@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -36,20 +34,21 @@ public class DoctorController {
     }
 
     @GetMapping
-    public Page<DoctorListDTO> list(@PageableDefault(size =10, sort = {"name"}) Pageable pageable){
-        return service.list(pageable);
+    public ResponseEntity<Page<DoctorListDTO>> list(@PageableDefault(size =10, sort = {"name"}) Pageable pageable){
+        Page<DoctorListDTO> page = service.list(pageable);
+        return ResponseEntity.ok(page);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> update(@RequestBody @Valid DoctorUpdateDTO data){
-       service.update(data);
-       return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id,@RequestBody @Valid DoctorUpdateDTO data){
+       service.update(id, data);
+       return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-       service.delete(id);
-       return ResponseEntity.ok().build();
+       service.deactivate(id);
+       return ResponseEntity.noContent().build();
     }
 
 }

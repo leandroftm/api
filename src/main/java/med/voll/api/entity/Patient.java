@@ -24,6 +24,7 @@ public class Patient {
     private String name;
     private String email;
     private String telephone;
+    @Column(nullable = false, unique = true)
     private String cpf;
 
     @Embedded
@@ -52,7 +53,7 @@ public class Patient {
             this.active = data.active();
     }
 
-    public void applyInactive(){
+    public void deactivate(){
         this.active = false;
     }
 }

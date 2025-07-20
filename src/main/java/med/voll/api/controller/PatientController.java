@@ -34,19 +34,20 @@ public class PatientController {
     }
 
     @GetMapping
-    public Page<PatientListDTO> findAllActive(@PageableDefault(size = 10, sort = {"name"}) Pageable pageable){
-        return service.list(pageable);
+    public ResponseEntity<Page<PatientListDTO>> list(@PageableDefault(size = 10, sort = {"name"}) Pageable pageable){
+        Page<PatientListDTO> page = service.list(pageable);
+        return ResponseEntity.ok(page);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> update(@RequestBody @Valid PatientUpdateDTO data){
-        service.update(data);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid PatientUpdateDTO data){
+        service.update(id, data);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-        service.delete(id);
+        service.deactivate(id);
         return ResponseEntity.noContent().build();
     }
 

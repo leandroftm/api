@@ -1,5 +1,6 @@
 package med.voll.api.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import med.voll.api.dto.doctor.DoctorCreateDTO;
 import med.voll.api.dto.doctor.DoctorUpdateDTO;
 import med.voll.api.entity.Doctor;
@@ -19,26 +20,38 @@ public class DoctorService {
 
     @Transactional
     public Long create(DoctorCreateDTO data){
-        Long id = new Doctor(data).getId();
-        repository.save(new Doctor(data));
-        return id;
+        if(repository.existsByCrm(data.crm()))
+            throw new RuntimeException("CRM já cadastrado.");
+
+        Doctor doctor = new Doctor(data);
+        repository.save(doctor);
+        return doctor.getId();
     }
 
-
+    @Transactional(readOnly = true)
     public Page<DoctorListDTO> list(Pageable pageable){
-        return repository.findAllByActiveTrue(pageable).
-                map(DoctorListDTO::new);
+        return repository.findAllByActiveTrue(pageable)
+                .map(DoctorListDTO::new);
     }
 
     @Transactional
-    public void update(DoctorUpdateDTO data){
-        var doctor = repository.getReferenceById(data.id());
-        doctor.update(data);
+    public void update(Long id, DoctorUpdateDTO data){
+        if(data.name() == null && data.telephone() == null && data.address() == null && data.active() == null){
+
+            throw new IllegalArgumentException("Pelo menos um campo deve ser informado para atualização.");
+
+        }
+            Doctor doctor = repository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Médico com ID " + id + " não encontrado."));
+
+            doctor.update(data);
+
     }
 
     @Transactional
-    public void delete(Long id){
-        var doctor = repository.getReferenceById(id);
-        doctor.applyInactive();
+    public void deactivate(Long id){
+        Doctor doctor = repository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Médico com ID " + id + " não encontrado."));
+        doctor.deactivate();
     }
 }
